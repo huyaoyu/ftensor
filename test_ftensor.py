@@ -323,6 +323,8 @@ class TestFTensor(unittest.TestCase):
             
             device = entry['device']
             
+            true_grad = raw_true_grad.to(device=device)
+            
             # Get the point_array.
             ft = TestFTensor.point_array.clone().to(device=device)
             ft.requires_grad = True
@@ -330,11 +332,35 @@ class TestFTensor(unittest.TestCase):
             # Some simple computation.
             ft2 = ft * 2
             ft2.backward( torch.ones_like( ft.tensor() ) )
-            true_grad = raw_true_grad.to(device=device)
             
             # Show the gradients.
             print(f'ft.grad = {ft.grad}')
             self.assertTrue( all_close_ft(ft.grad, true_grad), f'{show_func_name()} failed with entry {entry}' )
+            
+            # Get another point_array copy.
+            ft = TestFTensor.point_array.clone().to(device=device)
+            ft.requires_grad = True
+            
+            # Some simple computation.
+            ft3 = ft * 2
+            ft3 = ft3.tensor()
+            ft3.backward( torch.ones_like( ft.tensor() ) )
+            
+            print(f'ft3: ft.grad = {ft.grad}')
+            
+            self.assertTrue( all_close_ft(ft.grad, true_grad), f'{show_func_name()} failed with entry {entry}' )
+            
+            # Get the tensor version of ft.
+            t4 = TestFTensor.point_array.detach().tensor().clone().to(device=device)
+            t4.requires_grad = True
+            ft5 = FTensor(t4, f0=ft.f0, f1=ft.f1)
+            ft6 = ft5 * 2
+            ft6 = ft6.tensor()
+            ft6.backward( torch.ones_like( ft.tensor() ) )
+            
+            print(f'ft6: t4.grad = \n{t4.grad}')
+            
+            self.assertTrue( all_close_ft(t4.grad, true_grad), f'{show_func_name()} failed with entry {entry}' )
     
     def test_inverse(self):
         print_delimiter( show_func_name() )
