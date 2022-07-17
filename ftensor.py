@@ -39,6 +39,10 @@ class FTensor(torch.Tensor):
 
     def __init__(self, *data, f0:str=DEFAULT_FRAME, f1:str=None, rotation=False):
         '''
+        Special note: the rotation flag is not used for enforcing a valid SO(3) or 
+        2D rotation, it is used for quickly accessing the sub-matrices of a general 
+        4x4 or 3x3 transformation matrix.
+        
         Arguments:
         ==========
         data: the appropriate values for constructing a torch.Tensor.

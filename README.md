@@ -3,14 +3,14 @@ Add reference frames to PyTorch Tensor objects. Reduce the headache of ambiguous
 
 # Introduction
 
-Tensor with reference frame definition. Designed for handling vector coordinates an dtransformation between frames. Dedicated to 2-, 3-, and 4-dimensional spaces. Try to recall how many times you have trouble understanding other people when they say "The pose of the robot is XYZ", "T is a transform between frame A and B", and "M is the extrinsic matrix of camera C". The problem is that when we, casually, say something about coordiantes and the transformation between them, we are skipping some very important pieces of information. The information that is usually missing is what frame is used for defining coordinates and transforms. Furthermore, when we start implementing these things, there are rarely any mechanisms that can watch our back and make sure we are not messing up these things.
+Tensor with reference frame definition. Designed for handling vector coordinates and transformation between frames. Dedicated to 2-, 3-, and 4-dimensional spaces. Try to recall how many times you have trouble understanding other people when they say "The pose of the robot is XYZ", "T is a transform between frame A and B", and "M is the extrinsic matrix of camera C". The problem is that when we, casually, say something about coordiantes and the transformation between them, we are skipping some very important pieces of information. The information that is usually missing is what frame is used for defining coordinates and transforms. Furthermore, when we start implementing these things, there are rarely any mechanisms that can watch our back and make sure we are not messing up these things.
         
 The core goal for FTensor is dealing with poor and ambiguous definitions of transforms and preventing wrong transformations from happening between coordinate frames. For an FTensor, there are two frames, f0 and f1.
 
 - For vectors, f0 is the frame of the vector coordinates. f1 should always be None.
 - For transform matrices, such as rotation matrix and 4x4 transform matrix, f0 is the frame of reference and f1 is the target. To be more specific, when we say that a transform matrix represents the pose of frame f1 w.r.t. frame f0, we mean that this transform matrix records the orientation and position of f1 w.r.r. f0 measured in f0. So the coordinates of a point vector under f1 can be transformed to f0 by p_f0 = T_f0_f1 @ p_f1, where T_f0_f1 is the transform matrix.
         
-Note that for vectors represented by FTensor, they are always column vectors. Meaning the shape variable of a 3D FTensor is (3, 1).
+Note that for vectors represented by FTensor, they are always column vectors, meaning the shape variable of a FTensor vector is (3, 1).
         
 Note that for an array of vectors, we support a row of column vectors, meaning that the valid shape of the array should be 2xN, 3xN, or 4xN, where N is the total number of vectors. FTensor also supports higher-dimensional formats as torch.Tensor does. Just make sure that the last two dimensions have the correct shape.
         
