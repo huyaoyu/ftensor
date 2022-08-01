@@ -89,14 +89,20 @@ def add_frame(g, frame):
     g.add_node(frame.name, data=frame)
 
 # A function for inserting an edge to the graph.
-def add_pose_edge(g, pose):
+def add_or_update_pose_edge(g, pose):
     '''
     g is the graph.
     pose is defined as T_parent_child, following the convention defined in the Google Slides.
     '''
     
-    g.add_edge(pose.f0, pose.f1, pose=pose)
-    g.add_edge(pose.f1, pose.f0, pose=pose.inverse())
+    if g.has_edge( pose.f0, pose.f1 ):
+        # Update the edges.
+        g[pose.f0][pose.f1]['pose'] = pose
+        g[pose.f1][pose.f0]['pose'] = pose.inverse()
+    else:
+        # Create the edges.
+        g.add_edge(pose.f0, pose.f1, pose=pose)
+        g.add_edge(pose.f1, pose.f0, pose=pose.inverse())
 
 # A function for compute the accumulated transformation (tf) along a chain of reference frames.
 def get_tf_along_chain(g, chain):

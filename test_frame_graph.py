@@ -3,7 +3,7 @@ import networkx as nx
 import torch
 
 from .ftensor import f_eye
-from .frame_graph import RefFrame, add_frame, add_pose_edge, get_tf_along_chain
+from .frame_graph import RefFrame, add_frame, add_or_update_pose_edge, get_tf_along_chain
 
 if __name__ == '__main__':
     # Create a directed graph.
@@ -30,7 +30,7 @@ if __name__ == '__main__':
     T_awf_rbf = f_eye(4, 'awf', 'rbf')
     T_awf_rbf.translation = torch.as_tensor([ 0, 1, 0 ])
     T_awf_rbf = T_awf_rbf.to('cuda')
-    add_pose_edge(G, T_awf_rbf )
+    add_or_update_pose_edge(G, T_awf_rbf )
 
     # RPF.
     T_rbf_rpf = f_eye(4, 'rbf', 'rpf')
@@ -40,13 +40,13 @@ if __name__ == '__main__':
         [ 0,  1,  0]
     ])
     T_rbf_rpf = T_rbf_rpf.to('cuda')
-    add_pose_edge(G, T_rbf_rpf )
+    add_or_update_pose_edge(G, T_rbf_rpf )
 
     # A CBF.
     T_rbf_cbf = f_eye(4, 'rbf', 'cbf')
     T_rbf_cbf.translation = torch.as_tensor([ 0, 1, 0 ])
     T_rbf_cbf = T_rbf_cbf.to('cuda')
-    add_pose_edge(G, T_rbf_cbf )
+    add_or_update_pose_edge(G, T_rbf_cbf )
 
     # A CPF.
     T_cbf_cpf = f_eye(4, 'cbf', 'cpf')
@@ -56,7 +56,7 @@ if __name__ == '__main__':
         [ 0,  1,  0]
     ])
     T_cbf_cpf = T_cbf_cpf.to('cuda')
-    add_pose_edge(G, T_cbf_cpf )
+    add_or_update_pose_edge(G, T_cbf_cpf )
 
     # A CIF.
     T_cbf_cif = f_eye(4, 'cbf', 'cif')
@@ -66,7 +66,7 @@ if __name__ == '__main__':
         [0, 1, 0]
     ])
     T_cbf_cif = T_cbf_cif.to('cuda')
-    add_pose_edge(G, T_cbf_cif )
+    add_or_update_pose_edge(G, T_cbf_cif )
 
     # ========== End of adding edges. ==========
 
