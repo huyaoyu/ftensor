@@ -85,50 +85,69 @@ class RefFrame(object):
 #         '''
 #         return self.pose.inverse()
 
-def add_frame(g, frame):
-    g.add_node(frame.name, data=frame)
+class FrameGraph(object):
+    def __init__(self):
+        super().__init__()
+        
+        self.g = nx.DiGraph()
 
-# A function for inserting an edge to the graph.
-def add_or_update_pose_edge(g, pose):
-    '''
-    g is the graph.
-    pose is defined as T_parent_child, following the convention defined in the Google Slides.
-    '''
-    
-    if g.has_edge( pose.f0, pose.f1 ):
-        # Update the edges.
-        g[pose.f0][pose.f1]['pose'] = pose
-        g[pose.f1][pose.f0]['pose'] = pose.inverse()
-    else:
-        # Create the edges.
-        g.add_edge(pose.f0, pose.f1, pose=pose)
-        g.add_edge(pose.f1, pose.f0, pose=pose.inverse())
+    def add_frame(self, frame):
+        self.g.add_node(frame.name, data=frame)
 
-# A function for compute the accumulated transformation (tf) along a chain of reference frames.
-def get_tf_along_chain(g, chain):
-    '''
-    g (DiGraph)
-    chain (list of node keys)
-    '''
+    # A function for inserting an edge to the graph.
+    def add_or_update_pose_edge(self, pose):
+        '''
+        pose is defined as T_parent_child, following the convention defined in the Google Slides.
+        '''
+        
+        if self.g.has_edge( pose.f0, pose.f1 ):
+            # Update the edges.
+            self.g[pose.f0][pose.f1]['pose'] = pose
+            self.g[pose.f1][pose.f0]['pose'] = pose.inverse()
+        else:
+            # Create the edges.
+            self.g.add_edge(pose.f0, pose.f1, pose=pose)
+            self.g.add_edge(pose.f1, pose.f0, pose=pose.inverse())
+
+    # A function for compute the accumulated transformation (tf) along a chain of reference frames.
+    def get_tf_along_chain(self, chain):
+        '''
+        g (DiGraph)
+        chain (list of node keys)
+        '''
+        
+        # We need at least two nodes in the chain.
+        assert len(chain) > 1, f'len(path) = {len(chain)}, expect it to be larger than 1'
+        
+        for i in range( len(chain) - 1 ):
+            p = chain[i]   # parent
+            c = chain[i+1] # child
+            
+            # Get the edge between p and c.
+            e = self.g[p][c]
+            
+            # Extract the pose attribute of the edge.
+            pose_e = e['pose']
+            
+            # Initialize the tf in the first iteration.
+            if i == 0:
+                tf = torch.eye(4, dtype=FLOAT_TYPE, device=pose_e.device)
+            
+            # Chain the TFs.
+            tf = tf @ pose_e
+            
+        return tf
     
-    # We need at least two nodes in the chain.
-    assert len(chain) > 1, f'len(path) = {len(chain)}, expect it to be larger than 1'
+    def query_transform(self, source, target, print_path=False):
+        '''
+        source, target (str): The names of the reference frames.
+        '''
+
+        # Try to find a shortest path between two nodes.
+        path = nx.shortest_path(self.g, source=source, target=target)
+        if print_path:
+            print(path)
+
+        # Get the TF along path.
+        return self.get_tf_along_chain(path)
     
-    for i in range( len(chain) - 1 ):
-        p = chain[i]   # parent
-        c = chain[i+1] # child
-        
-        # Get the edge between p and c.
-        e = g[p][c]
-        
-        # Extract the pose attribute of the edge.
-        pose_e = e['pose']
-        
-        # Initialize the tf in the first iteration.
-        if i == 0:
-            tf = torch.eye(4, dtype=FLOAT_TYPE, device=pose_e.device)
-        
-        # Chain the TFs.
-        tf = tf @ pose_e
-        
-    return tf
