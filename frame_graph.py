@@ -5,6 +5,7 @@
 # Data:
 # 20220626
 
+from logging import raiseExceptions
 import networkx as nx
 import numpy as np
 import torch
@@ -138,13 +139,26 @@ class FrameGraph(object):
             
         return tf
     
-    def query_transform(self, source, target, print_path=False):
+    def query_transform(self, f0, f1, print_path=False):
         '''
-        source, target (str): The names of the reference frames.
+        f0, f1 (str): The names of the reference frames.
         '''
 
+        # Test if f0 == f1.
+        if f0 == f1:
+            # Check if the frames exist.
+            assert f0 in self.g, f'{f0} does not exist in the frame graph. '
+            assert f1 in self.g, f'{f1} does not exist in the frame graph. '
+            
+            # Get the device info from the edge attribute.
+            for e in self.g.edges:
+                device = e['pose'].device
+                dtype = e['pose'].dtype
+            
+            return f_eye(4, f0=f0, f1=f1).to(device=device, dtype=dtype)
+
         # Try to find a shortest path between two nodes.
-        path = nx.shortest_path(self.g, source=source, target=target)
+        path = nx.shortest_path(self.g, source=f0, target=f1)
         if print_path:
             print(path)
 

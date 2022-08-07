@@ -71,7 +71,7 @@ if __name__ == '__main__':
     # ========== End of adding edges. ==========
 
     # Query a transform.
-    tf = G.query_transform(source='cif', target='awf', print_path=True)
+    tf = G.query_transform(f0='cif', f1='awf', print_path=True)
     print(tf)
 
     # Should be
