@@ -112,6 +112,10 @@ class FTensor(torch.Tensor):
         
         return tree_map(wrap, out)
 
+    def __deepcopy__(self, memo):
+        # TODO: Check if this naive implementation is enough.
+        return self.detach().clone()
+
     def tensor(self) -> torch.Tensor:
         '''
         Return the underlying torch.Tensor.
