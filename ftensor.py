@@ -432,7 +432,7 @@ class FTensor(torch.Tensor):
         Note: this function is only for working with translation(), rotation(), and invers().
         A True value does not nessarily mean that the FTensor is a valid SO(3) or 2D rotation.
         '''
-        assert self.is_transform, f'Calling is_transform on a vector is not allowed. self: {self.f_to_str()}. '
+        assert self.is_transform, f'Calling is_rotation on a vector is not allowed. self: {self.f_to_str()}. '
         return self._is_rotation
     
     @is_rotation.setter
@@ -441,7 +441,7 @@ class FTensor(torch.Tensor):
         Note: this function is only for working with translation(), rotation(), and invers().
         Settting True does not nessarily enforce that the FTensor to be a valid SO(3) or 2D rotation.
         '''
-        assert self.is_transform, f'Calling is_transform on a vector is not allowed. self: {self.f_to_str()}. '
+        assert self.is_transform, f'Calling is_rotation on a vector is not allowed. self: {self.f_to_str()}. '
         assert value in (True, False), f'value is not a boolean. value = {value}. '
         
         if value:
