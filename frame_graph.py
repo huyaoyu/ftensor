@@ -152,8 +152,10 @@ class FrameGraph(object):
             
             # Get the device info from the edge attribute.
             for e in self.g.edges:
-                device = e['pose'].device
-                dtype = e['pose'].dtype
+                pose   = self.g.edges[e]['pose']
+                device = pose.device
+                dtype  = pose.dtype
+                break
             
             return f_eye(4, f0=f0, f1=f1).to(device=device, dtype=dtype)
 
