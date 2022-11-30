@@ -8,7 +8,7 @@ Tensor with reference frame definition. Designed for handling vector coordinates
 The core goal for FTensor is dealing with poor and ambiguous definitions of transforms and preventing wrong transformations from happening between coordinate frames. For an FTensor, there are two frames, f0 and f1.
 
 - For vectors, f0 is the frame of the vector coordinates. f1 should always be None.
-- For transform matrices, such as rotation matrix and 4x4 transform matrix, f0 is the frame of reference and f1 is the target. To be more specific, when we say that a transform matrix represents the pose of frame f1 w.r.t. frame f0, we mean that this transform matrix records the orientation and position of f1 w.r.r. f0 measured in f0. So the coordinates of a point vector under f1 can be transformed to f0 by p_f0 = T_f0_f1 @ p_f1, where T_f0_f1 is the transform matrix.
+- For transform matrices, such as rotation matrix and 4x4 transform matrix, f0 is the frame of reference and f1 is the target. To be more specific, when we say that a transform matrix represents the pose of frame f1 w.r.t. frame f0, we mean that this transform matrix records the orientation and position of f1 w.r.t. f0 measured in f0. So the coordinates of a point vector under f1 can be transformed to f0 by p_f0 = T_f0_f1 @ p_f1, where T_f0_f1 is the transform matrix.
         
 Note that for vectors represented by FTensor, they are always column vectors, meaning the shape variable of a FTensor vector is (3, 1).
         
