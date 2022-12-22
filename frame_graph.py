@@ -5,6 +5,7 @@
 # Data:
 # 20220626
 
+import copy
 from logging import raiseExceptions
 import networkx as nx
 import numpy as np
@@ -167,3 +168,7 @@ class FrameGraph(object):
         # Get the TF along path.
         return self.get_tf_along_chain(path)
     
+def compose(fg_0, fg_1):
+    fg = copy.deepcopy(fg_0)
+    fg.g = nx.compose( fg_0.g, fg_1.g )
+    return fg
