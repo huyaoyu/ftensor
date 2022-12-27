@@ -13,7 +13,8 @@
 from typing import Any
 
 import torch
-from torch.utils._pytree import tree_map
+# from torch.utils._pytree import tree_map
+from .compatible_pytree import tree_map
 
 DEFAULT_FRAME = 'ori'
 
