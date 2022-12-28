@@ -8,9 +8,4 @@
 try:
     from torch.utils._pytree import tree_map
 except ImportError:
-    from typing import Any
-    from torch.utils._pytree import ( PyTree, tree_flatten, tree_unflatten)
-
-    def tree_map(fn: Any, pytree: PyTree) -> PyTree:
-        flat_args, spec = tree_flatten(pytree)
-        return tree_unflatten([fn(i) for i in flat_args], spec)
+    from ._pytree import tree_map
